@@ -2,6 +2,7 @@ package onlineShop.models.products.computers;
 
 
 import onlineShop.common.constants.ExceptionMessages;
+import onlineShop.common.constants.OutputMessages;
 import onlineShop.models.products.BaseProduct;
 import onlineShop.models.products.Product;
 import onlineShop.models.products.components.Component;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class BaseComputer extends BaseProduct implements Computer {
+public abstract class BaseComputer extends BaseProduct implements Computer {
     private List<Component> components;
     private List<Peripheral> peripherals;
 
@@ -34,12 +35,12 @@ public class BaseComputer extends BaseProduct implements Computer {
     @Override
     public double getOverallPerformance() {
         if (components.isEmpty()) {
-            return this.overallPerformance;
+            return super.getOverallPerformance();
         }
 
-        double averageOverallComponentsPerformance = components.stream().mapToDouble(p -> p.getOverallPerformance()).average().orElse(0);
+        double averageOverallComponentsPerformance = components.stream().mapToDouble(Product::getOverallPerformance).average().orElse(0);
 
-        return overallPerformance + averageOverallComponentsPerformance;
+        return super.getOverallPerformance() + averageOverallComponentsPerformance;
     }
 
     @Override
@@ -47,7 +48,7 @@ public class BaseComputer extends BaseProduct implements Computer {
         double componentsPrice = components.stream().mapToDouble(Product::getPrice).sum();
         double peripheralsPrice = peripherals.stream().mapToDouble((Product::getPrice)).sum();
 
-        return componentsPrice + peripheralsPrice + this.price;
+        return componentsPrice + peripheralsPrice + super.getPrice();
     }
 
     @Override
@@ -137,23 +138,17 @@ public class BaseComputer extends BaseProduct implements Computer {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append(String.format("Overall Performance: %.2f. Price: %.2f - %s: %s %s (Id: %d)",
-                this.getOverallPerformance(),
-                this.getPrice(),
-                this.getClass().getSimpleName(),
-                manufacturer,
-                model,
-                id));
+        result.append(super.toString());
         result.append(System.lineSeparator());
-        result.append(String.format(" Components (%d):", components.size()));
+        result.append(String.format(" " + OutputMessages.COMPUTER_COMPONENTS_TO_STRING, components.size()));
         result.append(System.lineSeparator());
         for (Component component : components) {
             result.append("  ").append(component.toString());
             result.append(System.lineSeparator());
         }
-        result.append(String.format(" Peripherals (%d); Average Overall Performance (%.2f):",
+        result.append(String.format(" " + OutputMessages.COMPUTER_PERIPHERALS_TO_STRING,
                 peripherals.size(),
-                peripherals.stream().mapToDouble(p -> p.getOverallPerformance()).average().orElse(0.0)));
+                peripherals.stream().mapToDouble(Product::getOverallPerformance).average().orElse(0.0)));
         result.append(System.lineSeparator());
         for (Peripheral peripheral : peripherals) {
             result.append("  ").append(peripheral.toString());

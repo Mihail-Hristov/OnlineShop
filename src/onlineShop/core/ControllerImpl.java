@@ -10,8 +10,11 @@ import onlineShop.models.products.computers.Laptop;
 import onlineShop.models.products.peripherals.*;
 
 import java.lang.reflect.Constructor;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ControllerImpl implements Controller {
     private static final String COMPUTER_PACKAGE_NAME = "onlineShop.models.products.computers.";
@@ -109,9 +112,6 @@ public class ControllerImpl implements Controller {
         Component component = null;
 
         switch (componentType) {
-            case "BaseComponent":
-                component = new BaseComponent(id, manufacturer, model, price, overallPerformance, generation);
-                break;
             case "CentralProcessingUnit":
                 component = new CentralProcessingUnit(id, manufacturer, model, price, overallPerformance, generation);
                 break;
@@ -165,17 +165,20 @@ public class ControllerImpl implements Controller {
 
     @Override
     public String BuyBestComputer(double budget) {
-        Computer computer = computerMap.values().stream().filter(c -> {
-            c.getPrice() <= budget).
-        });
+        List<Computer> filteredComputers = computerMap.values().stream()
+                .filter(c -> c.getPrice() <= budget)
+                .sorted(Comparator.comparing(Computer::getOverallPerformance).reversed())
+                .collect(Collectors.toList());
 
-        if (computerMap.isEmpty() || computer == null) {
-            throw new IllegalArgumentException(ExceptionMessages.CAN_NOT_BUY_COMPUTER, budget);
+        if (filteredComputers.isEmpty()) {
+            throw new IllegalArgumentException(String.format(ExceptionMessages.CAN_NOT_BUY_COMPUTER, budget));
         }
 
-        return computer.toString();
+        Computer bestComputer = filteredComputers.get(0);
 
-        return "not";
+        computerMap.remove(bestComputer.getId());
+
+        return bestComputer.toString();
     }
 
     @Override

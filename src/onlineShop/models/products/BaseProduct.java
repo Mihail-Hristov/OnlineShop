@@ -2,7 +2,7 @@ package onlineShop.models.products;
 
 import onlineShop.common.constants.ExceptionMessages;
 
-public class BaseProduct implements Product{
+public abstract class BaseProduct implements Product{
     protected int id;
     protected String manufacturer;
     protected String model;
@@ -86,12 +86,12 @@ public class BaseProduct implements Product{
     @Override
     public String toString() {
         return String.format("Overall Performance: %.2f. Price: %.2f - %s: %s %s (Id: %d)",
-                overallPerformance,
-                price,
-                this.getClass().getSimpleName(),
-                manufacturer,
-                model,
-                id
+                getOverallPerformance(),
+                getPrice(),
+                getClass().getSimpleName(),
+                getManufacturer(),
+                getModel(),
+                getId()
                 );
     }
 }

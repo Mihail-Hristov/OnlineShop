@@ -2,10 +2,10 @@ package onlineShop.models.products.components;
 
 import onlineShop.models.products.BaseProduct;
 
-public class BaseComponent extends BaseProduct implements Component {
+public abstract class BaseComponent extends BaseProduct implements Component {
     private int generation;
 
-    public BaseComponent(int id, String manufacturer, String model, double price, double overallPerformance, int generation) {
+    protected BaseComponent(int id, String manufacturer, String model, double price, double overallPerformance, int generation) {
         super(id, manufacturer, model, price, overallPerformance);
         this.generation = generation;
     }
@@ -18,14 +18,6 @@ public class BaseComponent extends BaseProduct implements Component {
 
     @Override
     public String toString() {
-        return String.format("Overall Performance: %.2f. Price: %.2f - %s: %s %s (Id: %d) Generation: %d",
-                overallPerformance,
-                price,
-                this.getClass().getSimpleName(),
-                manufacturer,
-                model,
-                id,
-                generation
-        );
+        return String.format(super.toString() + " Generation: %d", this.getGeneration());
     }
 }
